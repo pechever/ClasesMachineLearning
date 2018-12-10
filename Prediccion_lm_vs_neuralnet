@@ -1,0 +1,64 @@
+
+#Ejercicio 1 Leer archivo csv desde la nube y ponerlo en un data Frame 
+urlcsv="https://stats.idre.ucla.edu/stat/data/binary.csv"
+mydata = read.csv(urlcsv)
+mydata
+#la metadata tiene cuatro campos
+#admit 0: no admitido, 1: admitico
+#gre  es un numero
+#gpa  es un numero
+#rank es un numero
+
+#Se determin?? el modelo basado rank=f(admit,gre,gpa), que en R
+#se escribe rank~admit*gre*gpa
+
+#Ejercicio 2. Regresi??n Lineal "No Supervizada"
+#Regresi??n lineal usando terminos
+ranklm=lm("rank~admit+gre+gpa",data=mydata)
+summary(ranklm)
+#Regresi??n lineal usando terminos no lineales
+ranklm2=lm("rank~admit*gre*gpa",data=mydata)
+summary(ranklm)
+#Proceso para disminuir terminos
+
+step(ranklm2).   #observar conclusiones
+
+
+#Ejercicio 3. Regresi??n Lineal "Supervizada"
+nrowsmydata=nrow(mydata)
+porcentajedetrain=0.7
+ctrain=sample(nrowsmydata,porcentajedetrain*nrowsmydata)
+mydatatrain=mydata[ctrain,]  #datos de train
+mydatatest=mydata[-ctrain,]  #datos de tes
+
+ranklmtrain=lm("rank~admit+gre+gpa",data=mydatatrain)
+
+rankpredict=predict(ranklmtrain,mydatatest)
+plot(mydatatest$rank,rankpredict) #grafica la diferencia entre los valores reales y predecidos
+
+errormedioabsoluto=sum(abs(mydatatest$rank-rankpredict))/nrow(mydatatest)
+errormedioabsoluto
+#el error medio tiene valores diferentes, hicimos una tabla con los resultados 
+#de cada estudiante
+
+
+#Ejercicio 4 Redes Neuronales
+library(neuralnet) #linea que carga la libreria de la red neuronal
+nrowsmydata=nrow(mydata)
+porcentajedetrain=0.7
+capasocultas=c(3,3,3)
+formuladelmodelo=
+ctrain=sample(nrowsmydata,porcentajedetrain*nrowsmydata)
+mydatatrain=mydata[ctrain,]  #datos de train
+mydatatest=mydata[-ctrain,]  #datos de tes
+
+#ranklmtrain=lm("rank~admit+gre+gpa",data=mydatatrain)
+ranknntrain=neuralnet("rank~admit+gre+gpa",data=mydatatraining, hidden =c(5,5) , threshold=0.01, algorithm= "rprop+" )
+plot(ranknntrain)
+rankpredict=predict(ranknntrain,mydatatest)
+plot(mydatatest$rank,rankpredict) #grafica la diferencia entre los valores reales y predecidos
+
+errormedioabsoluto=sum(abs(mydatatest$rank-rankpredict))/nrow(mydatatest)
+errormedioabsoluto
+#el error medio tiene valores diferentes, hicimos una tabla con los resultados 
+#de cada estudiante
