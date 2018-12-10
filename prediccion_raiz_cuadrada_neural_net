@@ -1,0 +1,27 @@
+#Ejercicio entrenando una red neuronal para que pueda
+#predecir el valor de una raiz cuadrada
+
+#install.packages('neuralnet')
+library("neuralnet")
+traininginput =  as.data.frame(runif(100, min=0, max=100))
+trainingoutput = sqrt(traininginput)
+testdata = as.data.frame(runif(25, min=0, max=100))
+
+trainingdata = data.frame(traininginput,trainingoutput)
+colnames(trainingdata) = c("Input","Output")
+
+net.sqrt = neuralnet(Output~Input,trainingdata, hidden=c(3,3,2), threshold=0.01)
+
+print(net.sqrt)
+plot(net.sqrt)
+
+net.results = compute(net.sqrt, testdata) #Run them through the neural network
+ls(net.results)
+print(net.results$net.result)
+
+
+cleanoutput = data.frame(testdata,sqrt(testdata),
+                     as.data.frame(net.results$net.result))
+colnames(cleanoutput) = c("Input","Expected Output","Neural Net Output")
+print(cleanoutput)
+plot(cleanoutput)
